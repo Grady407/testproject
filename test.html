@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="UTF-8">
+        <title>test authentication</title>
+    </head>
+    <body>
+
+        <h4 id="logintitle">Test Login</h4>
+
+        <form action="/action_page.php">
+            Email:<br>
+            <input id="email-input" type="text" name="email">
+            <br>
+            Password:<br>
+            <input id="password-input" type="text" name="Password">
+            <br><br>
+            <input id="log-input" type="submit" value="Log-in">
+            <input id="sign-input" type="submit" value="Sign-up">
+          </form> 
+
+
+        <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyCJJPXXwrQykiMst-XChPdkA4ncV7O8yWY",
+    authDomain: "secret-santa-bf2db.firebaseapp.com",
+    databaseURL: "https://secret-santa-bf2db.firebaseio.com",
+    projectId: "secret-santa-bf2db",
+    storageBucket: "",
+    messagingSenderId: "838654797729"
+  };
+  firebase.initializeApp(config);
+
+function login() {
+    function newLoginHappened(user){
+        if (user) {
+            app(user);
+        }else {
+            var provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithRedirect(provider);
+        }
+    }
+        firebase.auth().onAuthStateChanged(newLoginHappened);
+}
+
+function app(user) {
+
+    document.getElementById("logintitle").innerHTML = user.displayName;
+}
+
+window.onload = login;
+  
+
+
+ 
+</script>
+    </body>
+</html>
+
