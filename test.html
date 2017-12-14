@@ -1,62 +1,147 @@
 <!DOCTYPE html>
 <html lang="en-us">
-    <head>
-        <meta charset="UTF-8">
-        <title>test authentication</title>
-    </head>
-    <body>
 
-        <h4 id="logintitle">Test Login</h4>
+<head>
+    <meta charset="UTF-8">
+    <title>test authentication</title>
 
-        <form action="/action_page.php">
-            Email:<br>
-            <input id="email-input" type="text" name="email">
-            <br>
-            Password:<br>
-            <input id="password-input" type="text" name="Password">
-            <br><br>
-            <input id="log-input" type="submit" value="Log-in">
-            <input id="sign-input" type="submit" value="Sign-up">
-          </form> 
-
-
-        <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script>
-  // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyCJJPXXwrQykiMst-XChPdkA4ncV7O8yWY",
-    authDomain: "secret-santa-bf2db.firebaseapp.com",
-    databaseURL: "https://secret-santa-bf2db.firebaseio.com",
-    projectId: "secret-santa-bf2db",
-    storageBucket: "",
-    messagingSenderId: "838654797729"
-  };
-  firebase.initializeApp(config);
-
-function login() {
-    function newLoginHappened(user){
-        if (user) {
-            app(user);
-        }else {
-            var provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithRedirect(provider);
+    <style>
+        body {
+            background-color: white;
         }
-    }
-        firebase.auth().onAuthStateChanged(newLoginHappened);
-}
+    </style>
+</head>
 
-function app(user) {
+<body>
+    <h1 id="status">Hello!</h1>
 
-    document.getElementById("logintitle").innerHTML = user.displayName;
-}
+    <h4 id="logintitle">Test Login</h4>
 
-window.onload = login;
-  
+    <form>
+        Email:
+        <br>
+        <input id="email-input" class="typedInfo" type="email" name="email">
+        <br> Password:
+        <br>
+        <input id="password-input" class="typedInfo" type="password" name="Password">
+        <br>
+        <br>
+        <button id="loginbtn" type="submit">Log-in</button>
+        <button id="signupbtn" type="submit">Sign-up</button>
+        <button id="logoutbtn" type="submit">
+            <span id="logcolor" style="color:white">Log-out</span>
+        </button>
+    </form>
+    </form>
 
 
- 
-</script>
-    </body>
+    <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyCJJPXXwrQykiMst-XChPdkA4ncV7O8yWY",
+            authDomain: "secret-santa-bf2db.firebaseapp.com",
+            databaseURL: "https://secret-santa-bf2db.firebaseio.com",
+            projectId: "secret-santa-bf2db",
+            storageBucket: "",
+            messagingSenderId: "838654797729"
+        };
+        firebase.initializeApp(config);
+
+
+        var auth = firebase.auth();
+
+        //allows an existing user to sign in
+        // auth.signInWithEmailAndPassword(email,pass);
+
+        //allows someone to create a user and log them in
+        // auth.createUserWithEmailAndPassword(email,pass);
+
+        //this will monitor the authentication state everytime a user logs in or out
+        // auth.onAuthStateChanged(firebaseuser => {});
+
+        //Get elements
+        const email = document.getElementById('email-input');
+        const password = document.getElementById('password-input');
+        const login = document.getElementById('loginbtn');
+        const signup = document.getElementById('signupbtn');
+        const logout = document.getElementById('logoutbtn');
+
+        //Add Login Event
+        login.addEventListener('click', e => {
+            event.preventDefault();
+            //Get email and pass
+            const eemail = email.value;
+            const ppassword = password.value;
+            const auth = firebase.auth();
+            //sign in
+            const promise = auth.signInWithEmailAndPassword(eemail, ppassword);
+
+            promise.catch(e => console.log(e.message));
+
+            $(".typedInfo").val("");
+        });
+
+
+        //add a signup event  
+        signup.addEventListener('click', e => {
+            event.preventDefault();
+            //Get email and pass
+            const eemail = email.value;
+            const ppassword = password.value;
+            const auth = firebase.auth();
+            //sign in
+            const promise = auth.createUserWithEmailAndPassword(eemail, ppassword);
+
+            promise.catch(e => console.log(e.message));
+
+            $(".typedInfo").val("");
+        });
+
+
+
+        //log out function
+        logout.addEventListener('click', e => {
+            firebase.auth().signOut();
+        });
+
+        //add a realtime authentication listener
+        firebase.auth().onAuthStateChanged(firebaseUser => {
+            if (firebaseUser) {
+                console.log(firebaseUser);
+                $("#logcolor").attr("style", "color:red");
+
+                var user = firebase.auth().currentUser;
+
+        //*************************the code below will send the user a verification email
+
+        user.sendEmailVerification().then(function () {
+            // Email sent.
+        }).catch(function (error) {
+            // An error happened.
+        });
+
+        //******************************************************************************
+
+            } else {
+                console.log("not logged in");
+
+
+            }
+            //the code below is for displaying the current user's email on the page ********
+            var user = firebase.auth().currentUser;
+            var email;
+
+            if (user != null) {
+
+                email = user.email;
+                console.log((email));
+                $("#status").text("Hello " + email);
+            }
+
+        });
+    </script>
+</body>
+
 </html>
-
